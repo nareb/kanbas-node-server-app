@@ -1,10 +1,10 @@
-// hello.js
-const Hello = (app) => {
-
-    app.get('/hello', (req, res) => { 
-        res.send('Life Is Good!'); // http://localhost:4000/hello responds "Life is good"
+function HelloRoutes(app) {
+    app.get("/", (req, res) => {
+      res.send("Welcome to Web Dev!");
     });
-
-    app.get('/', (req, res) => {res.send ('Welcome to Full Stack Development!'); 
-    });  // http://localhost:4000 responds "Welcome to Full Stack"
-export default Hello;
+    app.get("/hello", (req, res) => {
+      res.send("Life is good!");
+    });
+  }
+  
+  export default HelloRoutes;
