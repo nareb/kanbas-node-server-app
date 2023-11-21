@@ -1,11 +1,18 @@
 import express from "express";
+import HelloRoutes from "./hello.js";
 import Lab5 from "./lab5.js";
-import Hello from "./hello.js";
+import CourseRoutes from "./courses/routes.js";
+import ModuleRoutes from "./modules/routes.js";
+import cors from "cors";
 
 const app = express();
+app.use(cors());
 app.use(express.json());
+
+ModuleRoutes(app);
+CourseRoutes(app);
 Lab5(app);
-Hello(app);
+HelloRoutes(app);
 
 app.listen(4000, () => {
     console.log('Server is running on port 4000');

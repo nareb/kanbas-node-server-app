@@ -1,9 +1,9 @@
 {
-  "type": "module", 
+  "type": "module",
   "name": "kanbas-node-server-app",
   "version": "1.0.0",
   "description": "Node.js HTTP Web server for the Kanbas application",
-  "main": "index.js",
+  "main": "hello.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app.js"
@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/nareb/kanbas-node-server-app#readme",
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.18.2"
   }
 }
