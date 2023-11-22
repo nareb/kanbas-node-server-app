@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 import HelloRoutes from "./hello.js";
 import Lab5 from "./lab5.js";
@@ -14,6 +15,8 @@ CourseRoutes(app);
 Lab5(app);
 HelloRoutes(app);
 
-app.listen(4000, () => {
-    console.log('Server is running on port 4000');
-  });
+const port = process.env.PORT || 4000;
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
+});
