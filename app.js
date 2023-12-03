@@ -4,7 +4,7 @@ import session from "express-session";
 import express from "express";
 import EnrollmentRoutes from "./enrollments/routes.js";
 import HelloRoutes from "./hello.js";
-import Lab5 from "./lab5.js";
+import Lab5 from "./Lab5.js";
 import CourseRoutes from "./courses/routes.js";
 import ModuleRoutes from "./modules/routes.js";
 import UserRoutes from "./users/routes.js";
