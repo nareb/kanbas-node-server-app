@@ -2,22 +2,37 @@
 import * as dao from "./dao.js";
 function CourseRoutes(app) {
 
-  app.get("/api/courses", async (req, res) => {
-    if (!req.session.currentUser || !req.session.currentUser._id) {
-      res.status(401).send("Unauthorized");
-      return;
-    }
-    
+  /*app.get("/api/courses", async (req, res) => {
     const author = req.session.currentUser._id;
     const courses = await dao.findCoursesByAuthor(author);
     res.json(courses);
   });
+
+  app.post("/api/courses", async (req, res) => {
+    const author = req.session.currentUser._id;
+    const newCourse = await dao.createCourseByAuthor(author, req.body);
+    res.json(newCourse);
+  });
+  */
+
+  app.get("/api/courses", async (req, res) => {
+    try {
+      // Fetch all courses without considering the user
+      const courses = await dao.findAllCourses();
+      res.json(courses);
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+      res.status(500).send("Internal Server Error");
+    }
+  });
+
 
 
   app.get("/api/courses/all", async (req, res) => {
     const courses = await dao.findAllCourses();
     res.json(courses);
   });
+
   app.get("/api/courses/:id", async (req, res) => {
     const { id } = req.params;
     // const course = Database.courses.find((course) => course._id === id);
@@ -38,11 +53,7 @@ function CourseRoutes(app) {
     Database.courses.splice(index, 1);
     res.json(204);
   });
-  app.post("/api/courses", async (req, res) => {
-    const author = req.session.currentUser._id;
-    const newCourse = await dao.createCourseByAuthor(author, req.body);
-    res.json(newCourse);
-  });
+  
   app.put("/api/courses/:id", (req, res) => {
     const { id } = req.params;
     const index = Database.courses.findIndex((course) => course._id === id);
