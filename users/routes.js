@@ -1,6 +1,6 @@
 import * as dao from "./dao.js";
 
-// let currentUser = null;
+//let currentUser = null;
 
 function UserRoutes(app) {
   const findAllUsers = async (req, res) => {
@@ -17,6 +17,7 @@ function UserRoutes(app) {
     const user = await dao.findUserByUsername(username);
     res.json(user);
   };
+
   const findUserByCredentials = async (req, res) => {
     const { username, password } = req.params;
     const user = await dao.findUserByCredentials(username, password);
@@ -48,12 +49,14 @@ function UserRoutes(app) {
     req.session["currentUser"] = currentUser;
     res.json(status);
   };
+
   const updateFirstName = async (req, res) => {
     const id = req.params.id;
     const newFirstName = req.params.newFirstName;
     const status = await dao.updateUser(id, { firstName: newFirstName });
     res.json(status);
   };
+
   const deleteUser = async (req, res) => {
     const id = req.params.id;
     const status = await dao.deleteUser(id);
@@ -71,12 +74,30 @@ function UserRoutes(app) {
       res.sendStatus(403);
     }
   };
+
   const signout = async (req, res) => {
     // currentUser = null;
     req.session.destroy();
     res.sendStatus(200);
   };
-  const signup = async (req, res) => {};
+
+  const signup = async (req, res) => {
+    try{
+      const user = await dao.findUserByUsername(
+        req.body.username);
+      if (user) {
+        res.status(400).json(
+        { message: "Username already taken" });
+        return;
+      }
+      currentUser = await dao.createUser(req.body);
+      res.json(currentUser);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  };
+
   const account = async (req, res) => {
     const currentUser = req.session["currentUser"];
     // if (!currentUser) {
@@ -88,6 +109,7 @@ function UserRoutes(app) {
 
   app.post("/api/users/signout", signout);
   app.post("/api/users/signin", signin);
+  app.post("/api/users/signup", signup);
   app.post("/api/users/account", account);
 
   app.delete("/api/users/:id", deleteUser);
