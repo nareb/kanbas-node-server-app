@@ -3,6 +3,13 @@ import * as dao from "./dao.js";
 let currentUser = null;
 
 function UserRoutes(app) {
+
+  const checkUsernameAvailability = async (req, res) => {
+    const { username } = req.params;
+    const user = await dao.findUserByUsername(username);
+    res.json({ available: !user });
+  };
+
   const findAllUsers = async (req, res) => {
     const users = await dao.findAllUsers();
     res.json(users);
@@ -102,6 +109,7 @@ function UserRoutes(app) {
   };
 
   app.post("/api/users/signup", signup);
+  app.get("/api/users/checkUsername/:username", checkUsernameAvailability);
   app.post("/api/users/signout", signout);
   app.post("/api/users/signin", signin);
   app.post("/api/users/account", account);
