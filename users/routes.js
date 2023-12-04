@@ -1,6 +1,6 @@
 import * as dao from "./dao.js";
 
-//let currentUser = null;
+let currentUser = null;
 
 function UserRoutes(app) {
   const findAllUsers = async (req, res) => {
@@ -63,6 +63,17 @@ function UserRoutes(app) {
     res.json(status);
   };
 
+  const signup = async (req, res) => {
+      const user = await dao.findUserByUsername(
+        req.body.username);
+      if (user) {
+        res.status(400).json(
+        { message: "Username already taken" });
+      }
+      currentUser = await dao.createUser(req.body);
+      res.json(currentUser);
+  };
+
   const signin = async (req, res) => {
     const { username, password } = req.body;
     const user = await dao.findUserByCredentials(username, password);
@@ -81,23 +92,6 @@ function UserRoutes(app) {
     res.sendStatus(200);
   };
 
-  const signup = async (req, res) => {
-    try{
-      const user = await dao.findUserByUsername(
-        req.body.username);
-      if (user) {
-        res.status(400).json(
-        { message: "Username already taken" });
-        return;
-      }
-      currentUser = await dao.createUser(req.body);
-      res.json(currentUser);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  };
-
   const account = async (req, res) => {
     const currentUser = req.session["currentUser"];
     // if (!currentUser) {
@@ -107,11 +101,10 @@ function UserRoutes(app) {
     res.json(currentUser);
   };
 
+  app.post("/api/users/signup", signup);
   app.post("/api/users/signout", signout);
   app.post("/api/users/signin", signin);
-  app.post("/api/users/signup", signup);
   app.post("/api/users/account", account);
-
   app.delete("/api/users/:id", deleteUser);
   app.get("/api/users/updateFirstName/:id/:newFirstName", updateFirstName);
   app.get("/api/users/:username/:password/:email/:role", createUser);
