@@ -1,15 +1,8 @@
 import * as dao from "./dao.js";
 
-let currentUser = null;
+// let currentUser = null;
 
 function UserRoutes(app) {
-
-  const checkUsernameAvailability = async (req, res) => {
-    const { username } = req.params;
-    const user = await dao.findUserByUsername(username);
-    res.json({ available: !user });
-  };
-
   const findAllUsers = async (req, res) => {
     const users = await dao.findAllUsers();
     res.json(users);
@@ -24,7 +17,6 @@ function UserRoutes(app) {
     const user = await dao.findUserByUsername(username);
     res.json(user);
   };
-
   const findUserByCredentials = async (req, res) => {
     const { username, password } = req.params;
     const user = await dao.findUserByCredentials(username, password);
@@ -38,6 +30,14 @@ function UserRoutes(app) {
   };
 
   const createUser = async (req, res) => {
+    //if (currentUser && currentUser.role === "ADMIN") {
+    const user = await dao.createUser(req.body);
+    res.json(user);
+    //return;
+    //}
+    res.status(401).json({ message: "Unauthorized" });
+  };
+  const createUser1 = async (req, res) => {
     const { username, password, email, role } = req.params;
     const user = await dao.createUser({
       username,
@@ -56,29 +56,16 @@ function UserRoutes(app) {
     req.session["currentUser"] = currentUser;
     res.json(status);
   };
-
   const updateFirstName = async (req, res) => {
     const id = req.params.id;
     const newFirstName = req.params.newFirstName;
     const status = await dao.updateUser(id, { firstName: newFirstName });
     res.json(status);
   };
-
   const deleteUser = async (req, res) => {
     const id = req.params.id;
     const status = await dao.deleteUser(id);
     res.json(status);
-  };
-
-  const signup = async (req, res) => {
-      const user = await dao.findUserByUsername(
-        req.body.username);
-      if (user) {
-        res.status(400).json(
-        { message: "Username already taken" });
-      }
-      currentUser = await dao.createUser(req.body);
-      res.json(currentUser);
   };
 
   const signin = async (req, res) => {
@@ -92,13 +79,19 @@ function UserRoutes(app) {
       res.sendStatus(403);
     }
   };
-
   const signout = async (req, res) => {
     // currentUser = null;
     req.session.destroy();
     res.sendStatus(200);
   };
-
+  const signup = async (req, res) => {
+    const user = await dao.findUserByUsername(req.body.username);
+    if (user) {
+      res.status(400).json({ message: "Username already taken" });
+    }
+    const currentUser = await dao.createUser(req.body);
+    res.json(currentUser);
+  };
   const account = async (req, res) => {
     const currentUser = req.session["currentUser"];
     // if (!currentUser) {
@@ -108,14 +101,15 @@ function UserRoutes(app) {
     res.json(currentUser);
   };
 
-  app.post("/api/users/signup", signup);
-  app.get("/api/users/checkUsername/:username", checkUsernameAvailability);
   app.post("/api/users/signout", signout);
   app.post("/api/users/signin", signin);
+  app.post("/api/users/signup", signup);
   app.post("/api/users/account", account);
+
   app.delete("/api/users/:id", deleteUser);
   app.get("/api/users/updateFirstName/:id/:newFirstName", updateFirstName);
-  app.get("/api/users/:username/:password/:email/:role", createUser);
+  app.get("/api/users/:username/:password/:email/:role", createUser1);
+  app.post("/api/users", createUser);
   app.get("/api/users/role/:role", findUsersByRole);
   app.get("/api/users", findAllUsers);
   app.get("/api/users/:id", findUserById);

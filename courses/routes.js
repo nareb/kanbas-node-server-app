@@ -1,11 +1,19 @@
 // import Database from "../Database/index.js";
 import * as dao from "./dao.js";
 function CourseRoutes(app) {
+
   app.get("/api/courses", async (req, res) => {
+    if (!req.session.currentUser || !req.session.currentUser._id) {
+      res.status(401).send("Unauthorized");
+      return;
+    }
+    
     const author = req.session.currentUser._id;
     const courses = await dao.findCoursesByAuthor(author);
     res.json(courses);
   });
+
+
   app.get("/api/courses/all", async (req, res) => {
     const courses = await dao.findAllCourses();
     res.json(courses);
