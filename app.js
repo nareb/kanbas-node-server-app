@@ -1,5 +1,5 @@
-//import "dotenv/config";
 // const express = require("express");
+import "dotenv/config.js";
 import session from "express-session";
 
 import express from "express";
@@ -15,17 +15,20 @@ import FollowsRoutes from "./follows/routes.js";
 import SectionRoutes from "./sections/routes.js";
 import cors from "cors";
 
-const CONNECTION_STRING = process.env.REACT_APP_DB_CONNECTION_STRING || "mongodb://127.0.0.1:27017/kanbas-cs5610-fa23"
-//const CONNECTION_STRING = "mongodb://127.0.0.1:27017/kanbas-cs5610-fa23" || process.env.REACT_APP_DB_CONNECTION_STRING
+const CONNECTION_STRING =
+  process.env.REACT_APP_DB_CONNECTION_STRING ||
+  "mongodb://127.0.0.1:27017/kanbas";
+//"mongodb://127.0.0.1:27017/kanbas" ||
+//process.env.REACT_APP_DB_CONNECTION_STRING;
 mongoose.connect(CONNECTION_STRING);
-//mongoose.connect("mongodb://127.0.0.1:27017/kanbas-cs5610-fa23");
+//mongoose.connect("mongodb://127.0.0.1:27017/kanbas");
 
 const app = express();
 app.use(
   cors({
     credentials: true,
-    origin: "http://localhost:3000",
-    //origin: process.env.FRONTEND_URL
+    //origin: "http://localhost:3000",
+    origin: process.env.FRONTEND_URL,
   })
 );
 
@@ -34,16 +37,13 @@ const sessionOptions = {
   resave: false,
   saveUninitialized: false,
 };
-
-/*if (process.env.NODE_ENV !== "development") {
+if (process.env.NODE_ENV !== "development") {
   sessionOptions.proxy = true;
   sessionOptions.cookie = {
     sameSite: "none",
     secure: true,
   };
 }
-*/
-
 
 app.use(session(sessionOptions));
 
@@ -59,5 +59,5 @@ HelloRoutes(app);
 SectionRoutes(app);
 EnrollmentRoutes(app);
 
-app.listen(4000);
-//app.listen(process.env.PORT || 4000);
+//app.listen(4000);
+app.listen(process.env.PORT || 4000);
